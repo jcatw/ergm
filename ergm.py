@@ -4,7 +4,9 @@ A pure-python exponential random graph model (ERGM) implementation.
 classes:
     ergm
 """
+import numpy as np
 import util
+
 
 class ergm:
     def __init__(self, features):
@@ -47,7 +49,7 @@ class ergm:
           A float.
         """
         n_nodes = int(np.sqrt(X.shape[1]))
-        return np.sum([self.weight(X(i).reshape((n_nodes, n_nodes))) for i in xrange(X.shape[0])])
+        return np.sum([self.weight(X[i].reshape((n_nodes, n_nodes))) for i in xrange(X.shape[0])])
 
     def fit(self, X, n_iterations=100, n_graph_samples=1000, alpha=0.01):
         """
@@ -68,14 +70,14 @@ class ergm:
         all_coefs = [self.coefs]
         
         for i in xrange(n_iterations):
-            self.coefs = [np.random.normal(x,alpha) for x in coefs[-1]]
+            self.coefs = [np.random.normal(x,alpha) for x in all_coefs[-1]]
             # sample graphs of the same size as the input
             graph_samples = self.sample(n_nodes, n_graph_samples)
             kappa = self.sum_weights(graph_samples)
             p = np.product([self.weight(X[j].reshape((n_nodes,n_nodes))) / kappa
                             for j in xrange(n_input_graphs)])
             u = np.random.rand()
-            if p > ps[-1] or u < (p / probs[-1]):
+            if p > ps[-1] or u < (p / ps[-1]):
                 all_coefs.append(self.coefs)
                 ps.append(p)
             else:
@@ -103,7 +105,7 @@ class ergm:
         
         samples = np.zeros((n_samples, n_nodes**2))
         # start from a random adjacency matrix
-        this_G = np.random.randint((0,1), n_nodes, n_nodes)
+        this_G = np.random.randint(0, 1, (n_nodes, n_nodes))
         
         this_w = self.weight(this_G)
 

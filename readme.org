@@ -1,0 +1,7 @@
+* ERGM
+  An extensible pure-python implementation of the exponential random graph model.
+
+* Acknowledgements
+  [[http://davidmasad.com/blog/ergms-from-scratch/][David Masad's blog post]] about building exponential random graph
+  models from scratch was very helpful, and I used his code as a
+  reference.

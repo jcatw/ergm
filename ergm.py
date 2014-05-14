@@ -7,6 +7,13 @@ classes:
 import numpy as np
 import util
 
+class ConvergenceException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return self.msg.__repr__()
+
 
 class ergm:
     def __init__(self, features):
@@ -91,7 +98,7 @@ class ergm:
         return self.coefs
         
 
-    def sample(self, n_nodes, n_samples):
+    def sample(self, n_nodes, n_samples, tolerance=1000):
         """
         Sample n graphs from this ergm via Metropolis-Hastings MCMC.
 
@@ -110,7 +117,8 @@ class ergm:
         this_w = self.weight(this_G)
 
         i = 0
-        while i < n_samples:
+        ntries = 0
+        while i < n_samples and ntries < tolerance:
             new_G = util.permute(this_G)
             new_w = self.weight(new_G)
             u = np.random.rand()
@@ -119,6 +127,10 @@ class ergm:
                 this_G = new_G
                 this_w = new_w
                 i += 1
+            ntries += 1
+
+        if ntries == tolerance:
+            print 'did not converge'
 
         return samples
         
